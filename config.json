@@ -1,0 +1,14 @@
+{
+  "__comment__": "Set tool path here",
+  "java_path": "java",
+  "apkTool_path": null,
+  "___comment___": "If don't want to sign -- Leave signer path as null",
+  "uberApkSigner_path": null,
+  "signature": {
+      "keystore_path": null,
+      "keystore_password": null,
+      "alias": null,
+      "alias_password": null,
+      "zip_align": true
+  }
+}
