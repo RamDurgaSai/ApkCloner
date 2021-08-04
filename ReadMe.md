@@ -13,7 +13,7 @@
 
 ## Command Line Interface
 
-    usage: main.py [-h] -i INPUT [-n NO_OF_APKS] [-l LEVEL]
+    usage: apkcloner.py [-h] -i INPUT [-n NO_OF_APKS] [-l LEVEL]
     optional arguments:
     -h, --help            show this help message and exit
     -i INPUT, --input INPUT
