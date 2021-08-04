@@ -33,9 +33,9 @@
 
 ## Signing
     Apk cloner Supports Apk Signer(By Uber Apk Signer)
-    Set Keystore Path and other information in config.json file
+    Set Keystore Path and other information in config.json
 ### Level
-    If your cloned apk crashes then increase level
+    If your cloned apk crashes then increase the level
 ## Note 
     This Not Work For All Apks
 
