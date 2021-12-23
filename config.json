@@ -1,14 +1,14 @@
 {
   "__comment__": "Set tool path here",
   "java_path": "java",
-  "apkTool_path": null,
+  "apkTool_path": "apktool_2.5.0.jar",
   "___comment___": "If don't want to sign -- Leave signer path as null",
-  "uberApkSigner_path": null,
+  "uberApkSigner_path": "uber-apk-signer-1.2.1.jar",
   "signature": {
-      "keystore_path": null,
-      "keystore_password": null,
-      "alias": null,
-      "alias_password": null,
+      "keystore_path": "new_key",
+      "keystore_password": "123456",
+      "alias": "ram",
+      "alias_password": "123456",
       "zip_align": true
   }
 }

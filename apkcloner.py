@@ -18,7 +18,8 @@ class ApkCloner:
     def __init__(self,
                  apk_path:str,
                  no_of_clones=1,
-                 level=1):
+                 level=1,
+                 resources=False):
         if no_of_clones:
             self.clones = int(no_of_clones)
         else:
@@ -27,13 +28,13 @@ class ApkCloner:
             self.level = int(level)
         else:
             self.level = 1
-
+        self.resources_mod = resources
 
         self.apk = Apk(apk_path)
         self.settings = Settings()
 
-        self.files:List[str] = [] # To Hold all smali files
-
+        self.files:List[str] = [] # To Hold all smali files paths
+        self.formats = self.load_formats()
         self.say_welcome()
 
     def run(self):
@@ -71,7 +72,14 @@ class ApkCloner:
                         file_path = join(root, file)
                         if basename(file).endswith(".smali"):
                             self.files.append(file_path)
-
+            if self.resources_mod:
+                for root,dir, files in walk(join(self.apk.path, 'res'),topdown=True):
+                    for file in files:
+                        file_path = join(root,file)
+                        for format in self.formats:
+                            if str(file).endswith(format):
+                                self.files.append(file_path)
+                                break
             '''
             # Starts thread (Default 4)
             # Taken From:- https://stackoverflow.com/questions/2130016/splitting-a-list-into-n-parts-of-approximately-equal-length
@@ -96,7 +104,7 @@ class ApkCloner:
             print("\nCompiling Apk")
             self.apk.compile(apk_path=cloned_apk_path)
             if self.settings.signer_path:
-                print("\nSinging Apk")
+                print("\nSigning Apk")
                 self.apk.sign(apk_path=cloned_apk_path)
 
 
@@ -114,25 +122,33 @@ class ApkCloner:
         """
 
         for file_path in files:
+            try:
+                with open(file_path, "r") as file:
+                    data = file.read()
+                data = data.replace(package_name, new_package_name) #For Strings
+                data = data.replace(package_name.replace(".", "/"), new_package_name.replace(".", "/"))# For Classes paths
 
-            with open(file_path, "r+") as file:
-                data = file.read()
-            data = data.replace(package_name, new_package_name) #For Strings
-            data = data.replace(package_name.replace(".", "/"), new_package_name.replace(".", "/"))# For Classes paths
+                with open(file_path, "w") as file:
+                    file.write(data)
 
-            with open(file_path, "w") as file:
-                file.write(data)
-
-            if self.DEBUG:
-                print("Modding File "+file_path)
-
+                if self.DEBUG:
+                    print("Modding File "+file_path)
+            except:
+                pass
+    def load_formats(self):
+        try:
+            with open("format.txt",'r') as format_file:
+                formats = format_file.read().split("\n")
+            return [format for format in formats if not format != ""]
+        except FileNotFoundError:
+            sys.exit("format.txt file doesn't exits ... Reinstall ApkCloner to fix ")
     def say_welcome(self):
         """
         say welcome to user through console
         :return: None
         """
         welcome_string = " ".join((
-            "Apk Cloner V 2.0 copyright (C) 2021 https://github.com/RamDurgaSai/ApkCloner",
+            "Apk Cloner V 2.1 copyright (C) 2021 https://github.com/RamDurgaSai/ApkCloner",
             "\n\nRunning on" ,str(sys.platform), "| Cpu Count" ,str(cpu_count()),
             "\n\njava   ",str(self.settings.java_path),
             "\nApkTool",str(self.settings.apkTool_path),
@@ -154,10 +170,13 @@ if __name__ == '__main__':
     argparser.add_argument("-l", "--level",
                            required=False,
                            help="App resources level")
+    argparser.add_argument("-r","--resources",required=False,action="store_true",
+                           help="resources of application will patched")
 
     args = vars(argparser.parse_args())
 
     apkcloner = ApkCloner(apk_path=args["input"],
                           no_of_clones=args["no_of_apks"],
-                          level=args["level"])
+                          level=args["level"],
+                          resources=args['resources'])
     apkcloner.run()
